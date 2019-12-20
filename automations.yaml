@@ -1,0 +1,12 @@
+- id: '1556651382127'
+  alias: update UV data
+  trigger:
+  - minutes: /30
+    platform: time_pattern
+  condition:
+  - after: sunrise
+    before: sunset
+    condition: sun
+  action:
+  - service: openuv.update_data
+  initial_state: true
