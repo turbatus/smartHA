@@ -1,4 +1,6 @@
 homeassistant:
+  # Customization file
+  customize: !include customize.yaml
   # Name of the location where Home Assistant is running test
   name: Home
   # Location required to calculate the time the sun rises and sets
@@ -10,8 +12,7 @@ homeassistant:
   unit_system: metric
   # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   time_zone: Europe/Brussels
-  # Customization file
-  customize: !include customize.yaml
+
 
 history:
 
@@ -20,12 +21,24 @@ recorder:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
+# Discover some devices automatically
+discovery:
+
+#mobile app
+mobile_app:
+
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
 # http:
 #   base_url: example.duckdns.org:8123
 
-# Discover some devices automatically
-discovery:
+# Example configuration.yaml entry
+device_tracker:
+  - platform: ping
+    count: 10
+    hosts:
+      samsung_a9: 192.168.100.14
+      samsung_j5: 192.168.100.18
+      samsung_a7: 192.168.100.16
 
 system_health:
 
@@ -80,3 +93,4 @@ tts:
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
+scene: !include scenes.yaml
