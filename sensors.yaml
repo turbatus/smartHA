@@ -1,0 +1,190 @@
+#filter sensor (smooth)
+  - platform: filter
+    name: w1_temperaturef
+    entity_id: sensor.w1_temperature
+    filters:
+      - filter: outlier
+        window_size: 4
+        radius: 4.0
+      - filter: lowpass
+        time_constant: 10
+        precision: 2
+
+
+
+
+
+
+
+
+
+
+#db size sensor
+  - platform: sql
+    db_url: mysql://hhassio:hhassio@192.168.100.200/hassDB
+    queries:
+      - name: DB size
+        query: 'SELECT table_schema "database", Round(Sum(data_length + index_length) / 1024 / 1024, 1) "value" FROM information_schema.tables WHERE table_schema="hassDB" GROUP BY table_schema;'
+        column: 'value'
+        unit_of_measurement: MB
+
+#weather
+  - platform: darksky
+    api_key: d89148e26be2fb011c2b5c6ca1a79568
+    language: ro
+    name: DS
+    forecast:
+      - 0
+      - 1
+      - 2
+    hourly_forecast:
+      - 0
+      - 1
+    monitored_conditions:
+      - summary
+      - icon
+      - temperature
+      - apparent_temperature
+      - precip_type
+      - precip_intensity
+      - precip_probability
+      - precip_accumulation
+      - dew_point
+      - wind_speed
+      - wind_gust
+      - wind_bearing
+      - cloud_cover
+      - cloud_cover
+      - humidity
+      - pressure
+      - visibility
+      - ozone
+      - minutely_summary
+      - hourly_summary
+      - daily_summary
+      - temperature_high
+      - temperature_low
+      - apparent_temperature_high
+      - apparent_temperature_low
+      - precip_intensity_max
+      - uv_index
+      - moon_phase
+      - sunrise_time
+      - sunset_time
+      - nearest_storm_distance
+      - nearest_storm_bearing
+      - alerts
+
+  # Weather prediction
+  - platform: yr
+  
+  # command line
+  - platform: ssh
+    scan_interval: 30
+    name: Wifi Signal
+    host: !secret secret_host
+    port: !secret secret_port
+    username: !secret secret_username
+    password: !secret secret_password
+    key: !secret secret_key
+    command: '/sbin/iwconfig wlan0 | grep Signal |cut -d"=" -f3|cut -d" " -f1'
+    unit_of_measurement: " dBm"
+    #value_template: '{{ value.split("-f1")[1] }}'
+       #{%- set line = value.split("#") -%}
+       #{{ line[1] }}
+       #{{ value | round(1) }}
+       #{{ value.split('#')[0] }}
+      
+#    - platform: ssh
+#      host: !secret proxmox_host
+#      name: 'NUC CPU Temp'
+#      username: !secret proxmox_user
+#      password: !secret proxmox_pass
+#      command: "sensors | grep 'Package id 0:' | cut -c17-20"
+#      value_template: >-
+#        {%- set line = value.split("\r\n") -%}
+#        {{ line[1] }}
+#      unit_of_measurement: "ºC"
+
+
+  #rpi system stats
+  - platform: systemmonitor
+    resources:
+      - type: disk_use_percent
+        arg: /
+      - type: memory_use_percent
+      - type: swap_use_percent
+      - type: load_1m
+      - type: load_15m
+      - type: network_in
+        arg: wlan0
+      - type: network_out
+        arg: wlan0
+      - type: last_boot
+    # CPU Temp
+  - platform: command_line
+    name: CPU Temp
+    command: "cat /sys/class/thermal/thermal_zone0/temp"
+    unit_of_measurement: "°C"
+    value_template: '{{ value | multiply(0.001) | round(2)  }}'
+  - platform: time_date
+    display_options:
+      - 'time'
+      - 'date'
+      #- 'date_time'
+      #- 'date_time_iso'
+      #- 'time_date'
+      #- 'time_utc'
+      - 'beat'
+#custom decimals
+#  - platform: template
+#    sensors:
+#      load_1m_2d:
+#        friendly_name: "Load % (1m)"
+#        icon_template: mdi:memory
+#        unit_of_measurement: '%'
+#        value_template: "{{ states('sensor.load_1m')|float | round(2) }}"
+#      load_15m_2d:
+#        friendly_name: "Load % (15m)"
+#        icon_template: mdi:memory
+#        unit_of_measurement: '%'
+#        value_template: "{{ states('sensor.load_15m')|float | round(2) }}"
+#openuv last triggered
+#  - platform: template
+#    sensors:
+#      uv_data_update_time:
+#        friendly_name: "UV data updated"
+#        icon_template: mdi:timer
+        #unit_of_measurement: '%'
+#        value_template: "{{ state_attr('automation.update_uv_data','last_triggered') }}"
+
+  - platform: template
+    sensors:
+        friendly_wind_direction:
+            friendly_name: 'Wind Direction'
+            value_template: >-
+                {%if states.sensor.ds_wind_bearing.state | float<=11 %}N
+                {% elif states.sensor.ds_wind_bearing.state | float>348 %}N
+                {% elif states.sensor.ds_wind_bearing.state | float<=34 | float>11 %}NNE
+                {% elif states.sensor.ds_wind_bearing.state | float<=56 | float>34 %}NE
+                {% elif states.sensor.ds_wind_bearing.state | float<=79 | float>56 %}ENE
+                {% elif states.sensor.ds_wind_bearing.state | float<=101 | float>79 %}E
+                {% elif states.sensor.ds_wind_bearing.state | float<=124 | float>101 %}ESE
+                {% elif states.sensor.ds_wind_bearing.state | float<=146 | float>124 %}SE
+                {% elif states.sensor.ds_wind_bearing.state | float<=169 | float>146 %}SSE
+                {% elif states.sensor.ds_wind_bearing.state | float<=191 | float>169 %}S
+                {% elif states.sensor.ds_wind_bearing.state | float<=214 | float>191 %}SSW
+                {% elif states.sensor.ds_wind_bearing.state | float<=236 | float>214 %}SW
+                {% elif states.sensor.ds_wind_bearing.state | float<=259 | float>236 %}WSW
+                {% elif states.sensor.ds_wind_bearing.state | float<=281 | float>259 %}W
+                {% elif states.sensor.ds_wind_bearing.state | float<=304 | float>281 %}WNW
+                {% elif states.sensor.ds_wind_bearing.state | float<=326 | float>304 %}NW
+                {% elif states.sensor.ds_wind_bearing.state | float<=348 | float>326 %}NNW
+                {%- endif %}
+
+#certificate expiry
+  - platform: cert_expiry
+    host: hhassio.duckdns.org
+
+  - platform: rpi_power
+    text_state: true

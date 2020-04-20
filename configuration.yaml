@@ -1,0 +1,270 @@
+homeassistant:
+  whitelist_external_dirs:
+    - /config
+  # Customization file
+  customize: !include customize.yaml
+  # Name of the location where Home Assistant is running test
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret home_latitude
+  longitude: !secret home_longitude
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 0
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: !secret time_zone
+
+logger:
+  default: warning
+  #logs:
+  #  homeassistant.components.sensor.ssh: debug
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+#default_config:
+
+#in place of default_config:
+automation: !include automations.yaml
+cloud:
+config:
+frontend:
+  themes: !include_dir_merge_named themes
+logbook:
+  include:
+    entities:
+      - sensor.cpu_temp
+      - sensor.db_size
+      - sensor.disk_use_percent
+      - sensor.load_15m
+      - sensor.load_1m
+      - sensor.memory_use_percent
+      - sensor.swap_use_percent
+      - sensor.wifi_signal
+      
+      - sensor.network_in_wlan0
+      - sensor.network_out_wlan0
+      - sensor.e4r_kib_sec_received
+      - sensor.e4r_kib_sec_sent
+      
+      - sensor.lamp_energy_total
+      - sensor.tv_lamp_energy_total
+      
+      - sensor.w1_temperature
+      - sensor.w1_temperaturef
+      - sensor.w4_temperature
+      - sensor.w1_humidity
+      - sensor.w4_humidity
+      - sensor.w1_pressure
+      - sensor.w4_pressure
+      - sensor.w1_wifi_signal
+      - sensor.w4_wifi_signal
+      - sensor.co2
+      
+#    domains:
+#      - sensor
+#      - switch
+  exclude:
+    domains:
+#      - sensor
+      - switch
+      - automation
+      - weblink
+      - updater
+      - media_player
+    entities:
+      - sun.sun # Don't record sun data
+      - sensor.date
+      - sensor.internet_time
+      - sensor.time
+history:
+  include:
+    entities:
+      - sensor.cpu_temp
+      - sensor.db_size
+      - sensor.disk_use_percent
+      - sensor.load_15m
+      - sensor.load_1m
+      - sensor.memory_use_percent
+      - sensor.swap_use_percent
+      - sensor.wifi_signal
+      
+      - sensor.network_in_wlan0
+      - sensor.network_out_wlan0
+      - sensor.e4r_kib_sec_received
+      - sensor.e4r_kib_sec_sent
+      
+      - sensor.lamp_energy_total
+      - sensor.tv_lamp_energy_total
+      
+      - sensor.w1_temperature
+      - sensor.w1_temperaturef
+      - sensor.w4_temperature
+      - sensor.w1_humidity
+      - sensor.w4_humidity
+      - sensor.w1_pressure
+      - sensor.w4_pressure
+      - sensor.w1_wifi_signal
+      - sensor.w4_wifi_signal
+      - sensor.co2
+      
+#    domains:
+#      - sensor
+#      - switch
+  exclude:
+    domains:
+      - sensor
+      - switch
+      - automation
+      - weblink
+      - updater
+      - media_player
+    entities:
+      - sun.sun # Don't record sun data
+#      - sensor.date
+#      - sensor.internet_time
+#      - sensor.time
+    event_types:
+      - call_service # Don't record service calls
+      - service_removed
+      - service_executed
+      - platform_discovered
+      - homeassistant_start
+      - feedreader
+      - service_registered
+      - component_loaded
+recorder:
+  purge_keep_days: 10
+  db_url: mysql://hhassio:hhassio@192.168.100.200/hassDB?charset=utf8
+  include:
+    entities:
+      - sensor.cpu_temp
+      - sensor.db_size
+      - sensor.disk_use_percent
+      - sensor.load_15m
+      - sensor.load_1m
+      - sensor.memory_use_percent
+      - sensor.swap_use_percent
+      - sensor.wifi_signal
+      
+      - sensor.network_in_wlan0
+      - sensor.network_out_wlan0
+      - sensor.e4r_kib_sec_received
+      - sensor.e4r_kib_sec_sent
+      
+      - sensor.lamp_energy_total
+      - sensor.tv_lamp_energy_total
+      
+      - sensor.w1_temperature
+      - sensor.w1_temperaturef
+      - sensor.w4_temperature
+      - sensor.w1_humidity
+      - sensor.w4_humidity
+      - sensor.w1_pressure
+      - sensor.w4_pressure
+      - sensor.w1_wifi_signal
+      - sensor.w4_wifi_signal
+      - sensor.co2
+      
+#    domains:
+#      - sensor
+#      - switch
+  exclude:
+    domains:
+      - sensor
+      - switch
+      - automation
+      - weblink
+      - updater
+      - media_player
+    entities:
+      - sun.sun # Don't record sun data
+#      - sensor.date
+#      - sensor.internet_time
+#      - sensor.time
+    event_types:
+      - call_service # Don't record service calls
+      - service_removed
+      - service_executed
+      - platform_discovered
+      - homeassistant_start
+      - feedreader
+      - service_registered
+      - component_loaded
+map:
+mobile_app:
+person:
+script: !include scripts.yaml
+ssdp:
+sun:
+system_health:
+updater:
+zeroconf:
+zone:
+
+uilogs:
+
+# Discover some devices automatically
+discovery:
+
+#IOS
+ios:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Example configuration.yaml entry
+device_tracker:
+  - platform: ping
+    count: 10
+    hosts:
+      samsung_a9: 192.168.100.14
+      samsung_a70: 192.168.100.21
+      samsung_a7: 192.168.100.16
+
+
+
+# Example configuration.yaml entry
+#pi_hole:
+#  host: 'localhost:4865'
+#  ssl: false
+#  verify_ssl: false
+
+#ISS position on map
+#binary_sensor:
+#  - platform: iss
+#camera:
+#  - platform: generic
+#    name: ISS
+#    still_image_url: http://staticmap.openstreetmap.de/staticmap.php?center={{ states.binary_sensor.iss.attributes.lat }},{{ states.binary_sensor.iss.attributes.long }}&zoom=4&size=865x512&maptype=mapnik&markers={{ states.binary_sensor.iss.attributes.lat }},{{ states.binary_sensor.iss.attributes.long }},lightblue
+#    limit_refetch_to_url_change: true
+
+influxdb:
+#  host: a0d7b954-influxdb
+  host: 192.168.100.200
+  port: 8086
+  database: hhassio
+  username: hhassio
+  password: !secret red_secret
+  max_retries: 3
+  default_measurement: state
+
+# Sensors
+sensor: !include sensors.yaml
+
+#SSL config
+http:
+  #api_password: !secret red_secret
+  base_url: https://hhassio.duckdns.org
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+
+websocket_api:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+scene: !include scenes.yaml
+

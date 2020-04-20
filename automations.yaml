@@ -1,0 +1,19 @@
+- id: '1577977286794'
+  alias: Sunset TV Lamp on
+  description: ''
+  trigger:
+  - event: sunset
+    offset: '-60'
+    platform: sun
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: person.lavinia
+      state: Home
+    - condition: state
+      entity_id: person.p
+      state: Home
+  action:
+  - entity_id: switch.tv_lamp
+    service: switch.turn_on
