@@ -17,4 +17,3 @@
   action:
   - entity_id: switch.tv_lamp
     service: switch.turn_on
-
