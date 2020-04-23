@@ -3,7 +3,7 @@
   description: ''
   trigger:
   - event: sunset
-    offset: '-60'
+    offset: '-90'
     platform: sun
   condition:
   - condition: or
